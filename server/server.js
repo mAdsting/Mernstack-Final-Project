@@ -144,19 +144,26 @@
       ],
       handleValidationErrors,
       async (req, res) => {
+        console.log('Login attempt received:', { email: req.body.email, hasPassword: !!req.body.password });
         const { email, password } = req.body;
         if (!email || !password) {
+          console.log('Missing email or password');
           return res.status(400).json({ message: 'Email and password are required.' });
         }
         try {
+          console.log('Looking for user with email:', email);
           const user = await User.findOne({ email });
           if (!user) {
+            console.log('User not found:', email);
             return res.status(401).json({ message: 'Invalid credentials.' });
           }
+          console.log('User found, checking password for:', email);
           const isMatch = await bcrypt.compare(password, user.password);
           if (!isMatch) {
+            console.log('Password mismatch for:', email);
             return res.status(401).json({ message: 'Invalid credentials.' });
           }
+          console.log('Login successful for:', email);
           // Create JWT
           const token = jwt.sign(
             { userId: user._id, role: user.role, email: user.email },
@@ -211,6 +218,19 @@
       } catch (err) {
         console.error('User listing error:', err);
         res.status(500).json({ message: 'Server error.' });
+      }
+    });
+
+    // Debug endpoint to check all users (remove in production)
+    app.get('/api/debug/users', async (req, res) => {
+      try {
+        console.log('Debug: Checking all users in database');
+        const users = await User.find({}, 'email role createdAt');
+        console.log('Debug: Found users:', users);
+        res.json({ count: users.length, users });
+      } catch (err) {
+        console.error('Debug user listing error:', err);
+        res.status(500).json({ message: 'Server error.', error: err.message });
       }
     });
 
