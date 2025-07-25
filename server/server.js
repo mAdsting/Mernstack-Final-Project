@@ -234,6 +234,19 @@
       }
     });
 
+    // Debug endpoint to check all properties (remove in production)
+    app.get('/api/debug/properties', async (req, res) => {
+      try {
+        console.log('Debug: Checking all properties in database');
+        const properties = await Property.find({}, 'name location landlord createdAt');
+        console.log('Debug: Found properties:', properties);
+        res.json({ count: properties.length, properties });
+      } catch (err) {
+        console.error('Debug properties listing error:', err);
+        res.status(500).json({ message: 'Server error.', error: err.message });
+      }
+    });
+
     // Landlord creates a property
     app.post(
       '/api/properties',
