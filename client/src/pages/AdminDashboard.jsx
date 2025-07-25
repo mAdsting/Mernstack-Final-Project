@@ -22,7 +22,7 @@ function AdminDashboard() {
       setLoading(true);
       setError('');
       try {
-        const response = await fetch('/api/users', { headers: getAuthHeaders() });
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
         setUsers(data);
@@ -44,7 +44,7 @@ function AdminDashboard() {
       return;
     }
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ email, password, role }),
