@@ -20,7 +20,7 @@
     import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
     // Establish Socket.io connection
-    const socket = io('http://localhost:5000'); // Connect to your backend Socket.io server
+const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000'); // Connect to your backend Socket.io server
 
     function LandlordDashboard() {
       const [message, setMessage] = useState('');
