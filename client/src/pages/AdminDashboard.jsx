@@ -44,12 +44,31 @@ function AdminDashboard() {
       return;
     }
     try {
+      console.log('Creating user with:', { email, password, role });
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+      const headers = getAuthHeaders();
+      console.log('Headers:', headers);
+      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: headers,
         body: JSON.stringify({ email, password, role }),
       });
-      const data = await response.json();
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse JSON:', parseError);
+        throw new Error('Invalid response from server');
+      }
+      
       if (!response.ok) throw new Error(data.message || 'Error creating user');
       setMessage(`User ${email} (${role}) created successfully!`);
       setEmail('');
@@ -59,6 +78,7 @@ function AdminDashboard() {
       // Refresh user list
       setUsers((prev) => [...prev, { email, role, createdAt: new Date().toISOString() }]);
     } catch (err) {
+      console.error('Error creating user:', err);
       setError(err.message);
     }
   };

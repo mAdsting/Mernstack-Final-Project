@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
 export function getAuthHeaders() {
   const token = localStorage.getItem('token');
   if (!token || token === 'null' || token === 'undefined') {
-    window.location.href = '/login';
+    window.location.href = `${import.meta.env.VITE_API_URL}/login`;
     throw new Error('No valid token found. Redirecting to login.');
   }
   return {
